@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>RESTful API</title>
+	<style type="text/css">
+		.text
+		{
+			left: 70px;
+			position: absolute;
+		}
+		th
+		{
+			width: 40px;
+		}
+	</style>
+	<script type="text/javascript">
+		function init()
+		{
+			field = document.getElementsByTagName('input');
+			table = document.getElementById('t');
+			
+			name = field[0];
+			type = field[1];
+			desc = field[2];
+		}
+		function get(event)
+		{
+			xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = add;
+			xhr.open("GET", "https://tapchief-internship.herokuapp.com/products/", true);
+			console.log('lol');
+			xhr.send();
+		}
+		function createPrototype()
+		{
+			json = ['name', 'price', 'description', 'id'];
+			console.log(obj.length);
+			
+			for (var i = 0; i < obj.length; i++)
+			{
+				var row = document.createElement('tr');
+				for(var j = 0; j < 3; j++)
+				{
+					var cell=document.createElement('td');
+					var input=document.createElement('input');
+					input.value = obj[i][json[j]];
+					cell.appendChild(input);
+					row.appendChild(cell);
+				}
+				row.id = obj[i][json[3]];
+				var cell = document.createElement('td');
+				var checkBox = document.createElement('input');
+				checkBox.type = 'checkbox';
+				checkBox.name = 'toDelete';
+				cell.appendChild(checkBox);
+				row.appendChild(cell);
+				table.appendChild(row.cloneNode(true));
+			}
+			
+		}
+		function add()
+		{
+			if (xhr.readyState == 4 && xhr.status == 200)
+			{
+				var res = xhr.responseText;
+				console.log(res);
+				obj = JSON.parse(res);
+				createPrototype(obj);
+			}
+		}
+		function postRequest()
+		{
+			//table.appendChild(row.cloneNode(true));
+			xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = add;
+			xhr.open("POST", "https://tapchief-internship.herokuapp.com/products/", true);
+			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			var name = document.getElementById('name');
+			var price = document.getElementById('price');
+			var desc = document.getElementById('desc');
+			xhr.send("name=" + name.value + "&price=" + price.value + "&description=" + desc.value);
+		}
+		function removeRows()
+		{
+			console.log("remove");
+			l=document.getElementsByName('toDelete');
+			console.log(l.length);
+			for(var i in l)
+			{
+				var x=l[i];
+				var r = x.parentNode.parentNode;
+				if(x.checked)
+				{
+					xhr.open('DELETE', 'https://tapchief-internship.herokuapp.com/products/' + r.id + '/', true);
+					xhr.send();
+				}
+			}
+		}
+	</script>
+</head>
+<body onload="init()">
+	<table id='t' border>
+		<tr>
+			<th> Name </th>
+			<th> Type </th>
+			<th> Description </th>
+			<th> </th>
+		</tr>
+	</table></br>
+	<input type='button' onclick='get()' value='GET Rows'/>
+	<input type='button' onclick='removeRows()' value='Delete Rows'/>
+	<hr />
+	<form method="POST">
+		<label>Name: <input class="text" type="text" id="name" placeholder="Enter the name" /></label><br /><br />
+		<label>Price: <input class="text" type="text" id="price" placeholder="Enter the price" /></label><br /><br />
+		<label>Desc: <input class="text" type="text" id="desc" placeholder="Enter the description" /></label><br /><br />
+		<input type="button" onclick="postRequest()" value="Upload"></input>
+	</form>
+</body>
+</html>
